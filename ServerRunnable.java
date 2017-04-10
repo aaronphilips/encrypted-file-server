@@ -1,7 +1,10 @@
 import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
+import java.util.Arrays;
+// import java.io.BufferedReader;
+// import java.io.DataOutputStream;
+// import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import javax.crypto.KeyAgreement;
@@ -17,6 +20,17 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
   private Socket socket;
   public ServerRunnable(Socket socket){
     this.socket=socket;
+    try{
+      KeyPair keyPair=generateKeys();
+      privateKey=keyPair.getPrivate();
+      publicKey=keyPair.getPublic();
+      // System.out.println(privateKey.toString());
+      // System.out.println(publicKey.toString());
+
+
+    }catch(NoSuchAlgorithmException e){
+      e.printStackTrace();
+    }
   }
 
   PublicKey receivedPublicKey;
@@ -46,23 +60,19 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
   public void receivePublicKey(PublicKey receivedPublicKey){
     this.receivedPublicKey=receivedPublicKey;
   }
+
+
   public void run(){
     // Socket connectionSocket =socket.accept();
     System.out.println("connected");
-    try{
-      KeyPair keyPair=generateKeys();
-      privateKey=keyPair.getPrivate();
-      publicKey=keyPair.getPublic();
-      System.out.println(privateKey.toString());
-      System.out.println(publicKey.toString());
 
 
-    }catch(NoSuchAlgorithmException e){
-      e.printStackTrace();
-    }
-
-    try(BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
-
+    try(ObjectInputStream inFromClient = new ObjectInputStream(socket.getInputStream())){
+      ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
+      receivePublicKey((PublicKey) inFromClient.readObject());
+      outToClient.writeObject(publicKey);
+      generateCommonSecretKey();
+      System.out.println(new String(Arrays.toString(secretTEA_Key)));
       // while(clientSentence==null||!Objects.equals(clientSentence,"done")){
       //
       //
@@ -72,6 +82,8 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       //   outToClient.writeBytes(capitalizedSentence);
       // }
     }catch(IOException e){
+      e.printStackTrace();
+    }catch(ClassNotFoundException e){
       e.printStackTrace();
     }
     System.out.println("Server runnable completed");

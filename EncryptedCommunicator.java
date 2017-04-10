@@ -8,7 +8,7 @@ public interface EncryptedCommunicator{
   default public KeyPair generateKeys() throws NoSuchAlgorithmException{
     // try {
          final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("DH");
-         keyPairGenerator.initialize(1024);
+         keyPairGenerator.initialize(512);
 
          final KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
