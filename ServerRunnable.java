@@ -21,6 +21,7 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
   private PrivateKey privateKey;
   private byte[] secretTEA_Key;
   private byte[] salt;
+
   public ServerRunnable(Socket socket,byte[] salt){
     this.salt=salt;
     this.socket=socket;
@@ -44,6 +45,7 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
         e.printStackTrace();
     }
   }
+
   public PublicKey getPublicKey(){
     return publicKey;
   }
@@ -80,6 +82,20 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       // ELSE :
       EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
       sendEncrypted(encryptedLoginAck,outToClient);
+      while(true){
+        System.out.println("getting new REQUEST");
+
+        EncryptedMessage encryptedFileName= receiveEncrypted(inFromClient);//(EncryptedMessage) inFromClient.readObject();
+        System.out.println(encryptedMessageHandler.getString(encryptedFileName)+"|");
+        // if file exists
+        // try{
+          // byte[] fileByteArray =FileIO.loadFileToByteArray()
+          // EncryptedMessage encryptedFile=new EncryptedMessage(fileByteArray,secretTEA_Key);
+        // }catch (IOException e) {
+        //
+        // }
+
+      }
 
 
 

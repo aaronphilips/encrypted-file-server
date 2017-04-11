@@ -40,48 +40,47 @@ public final class FileIO{
     return stringList;
   }
 
-  public static void saveByteArrayToFile (byte[] byteArray,String fileName,String username){
-    try{
-      Path pathToFile = Paths.get("./"+username+"/"+fileName);
-      Path parent = Paths.get(".").toAbsolutePath();
-      System.out.println(parent.toString());
-      Files.createDirectories(pathToFile.getParent());
-      Files.createFile(pathToFile);
-    }catch(IOException e){
-      e.printStackTrace();
-    };
+  public static void saveByteArrayToFile (byte[] byteArray,String fileName,String folderName) throws IOException{
+    Path pathToFile = Paths.get("./"+folderName+"/"+fileName).toAbsolutePath();
+    if(!pathToFile.startsWith(Paths.get(".").toAbsolutePath())) throw new IOException();
+
+    Files.createDirectories(pathToFile.getParent());
+    deleteFile(pathToFile.toAbsolutePath().toString());
+    Files.createFile(pathToFile);
+    FileOutputStream fileOutputStream = new FileOutputStream("./"+folderName+"/"+fileName);
+    fileOutputStream.write(byteArray);
 
 
-    try(FileOutputStream fileOutputStream = new FileOutputStream("./"+username+"/"+fileName)){
-      fileOutputStream.write(byteArray);
-      // FileUtils.writeByteArrayToFile(new File("./"+username+"/"+fileName), byteArray);
-    }catch(IOException e){
-      e.printStackTrace();
-    };
+
   }
+
   // http://stackoverflow.com/questions/5343689/java-reading-a-file-into-an-arraylist
-  // this will be hardcoded to data, so less input checking
-  public static byte[] loadFileToByteArray(String fileName) throws IOException{
-      return Files.readAllBytes(Paths.get("./"+"DATA/"+ fileName));
+  public static byte[] loadFileToByteArray(String fileName, String folderName) throws IOException{
+      Path loadPath = Paths.get("./"+folderName+"/"+ fileName).toAbsolutePath();
+      if(!loadPath.startsWith(Paths.get("./"+folderName).toAbsolutePath())) throw new IOException();
+      return Files.readAllBytes(loadPath);
   }
 
-  public static Boolean deleteFile(String fileName){
-    return (new File("./"+fileName).delete());
+  public static Boolean deleteFile(String filepath){
+    return (new File(filepath).delete());
   }
 
-  public static void createDATA(){
-    try{
-      Files.createDirectories(Paths.get("./DATA"));
-    }catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+  // public static void createDATA(){
+  //   try{
+  //     Files.createDirectories(Paths.get("./DATA"));
+  //   }catch (IOException e) {
+  //     e.printStackTrace();
+  //   }
+  // }
   public static void main(String[] args) {
     try {
-      byte[] byteArray= loadFileToByteArray("input.txt");
+      byte[] byteArray= loadFileToByteArray("input.txt","DATA");
       saveByteArrayToFile(byteArray,"output.txt","user");
+    // do something
+
     }catch (Exception e) {
       System.out.println("wentbad");
+      e.printStackTrace();
     }
 
   }

@@ -4,6 +4,9 @@ import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 import java.io.DataOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class Test{
   public static void main(String[] args) {
     String string ="heed";
@@ -38,8 +41,8 @@ public class Test{
     byte[] barray = byteBuffer.array();
 
     System.out.println(new String(barray));
-
-
+    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+    System.out.println(sdfDate.format(new Date()));
     //
     // ByteArrayOutputStream baos = new ByteArrayOutputStream();
     // DataOutputStream dos = new DataOutputStream(baos);

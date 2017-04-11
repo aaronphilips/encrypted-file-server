@@ -1,6 +1,7 @@
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-// import java.io.DataOutputStream;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -11,16 +12,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.PrivateKey;
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyAgreement;
 import java.util.Arrays;
+
 public class Client implements EncryptedCommunicator{
 
   PublicKey receivedPublicKey;
   PublicKey publicKey;
   private PrivateKey privateKey;
   private byte[] secretTEA_Key;
-
   public Client(){
     try{
       KeyPair keyPair=generateKeys();
@@ -78,16 +78,37 @@ public class Client implements EncryptedCommunicator{
       sendEncrypted(encryptedPassword,outToServer);
 
       EncryptedMessage encryptedLoginAck=receiveEncrypted(inFromServer);
-      String ackstring=new String(encryptedMessageHandler.getString(encryptedLoginAck)).trim();
-      System.out.println(ackstring+" ack");
-      System.out.println("ack".equals(ackstring));
-      if(!"ack".equals(ackstring)){
+      // String ackstring=new String(encryptedMessageHandler.getString(encryptedLoginAck));
+      // System.out.println(ackstring+" ack");
+      // System.out.println("ack".equals(ackstring));
+      if(!Objects.equals("ack",encryptedMessageHandler.getString(encryptedLoginAck))){
         System.out.println("login was not accepted");
         return;
       }
-      System.out.println("STARTING FILE REQUESTS");
+      System.out.println("STARTING FILE REQUESTS.");
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+      String folderName=simpleDateFormat.format(new Date());
+      boolean finishedFileRequests = false;
+      while(true){
+        System.out.println("NEW REQUEST. Type \".finished\" without the quotes to finish retrieving");
+        System.out.print("Filename: ");
+        String fileName = inFromUser.readLine();
+        if(Objects.equals(fileName,".finished")) break;
+        EncryptedMessage encryptedFileName=new EncryptedMessage(fileName,secretTEA_Key);
+        sendEncrypted(encryptedFileName,outToServer);
 
+        EncryptedMessage encryptedAck=receiveEncrypted(inFromServer);
+        if(Objects.equals("ack",encryptedMessageHandler.getString(encryptedAck))){
+          EncryptedMessage encryptedFile=receiveEncrypted(inFromServer);
+          byte[] fileByteArray=encryptedMessageHandler.getByteArray(encryptedFile);
+          FileIO.saveByteArrayToFile(fileByteArray,fileName,folderName);
+        }else if(Objects.equals("fileNotFound",encryptedMessageHandler.getString(encryptedAck))){
+          System.out.println("fileNotFound");
+        }
 
+      }
+
+      System.out.println("client closing");
       clientSocket.close();
     }catch(UnknownHostException e){
 

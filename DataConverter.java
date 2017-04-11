@@ -35,17 +35,32 @@ public final class DataConverter{
   public static byte[] intArrayToByteArray(int[] intArray){
 
     ByteBuffer byteBuffer = ByteBuffer.allocate(intArray.length * 4);
+
     IntBuffer intBuffer = byteBuffer.asIntBuffer();
     intBuffer.put(intArray);
 
-    byte[] byteArray = byteBuffer.array();
-    // System.out.println(new String(byteArray));
+    byte[] byteArray = trimTrailingNull(byteBuffer.array());
+    // System.out.println("byte after trim "+Arrays.toString(byteArray));
+
     return byteArray;
+  }
+  // http://stackoverflow.com/questions/17003164/byte-array-with-padding-of-null-bytes-at-the-end-how-to-efficiently-copy-to-sma
+  private static byte[] trimTrailingNull(byte[] bytes)
+  {
+    int i = bytes.length - 1;
+    while (i >= 0 && bytes[i] == 0)
+    {
+        --i;
+    }
+
+    return Arrays.copyOf(bytes, i + 1);
   }
   public static void main(String[] args) {
     byte[] byteArray="heedheede".getBytes();
-    System.out.println("bytes "+Arrays.toString(byteArray));
-    byteArrayToIntArray(byteArray);
+    System.out.println("getBytes "+Arrays.toString(byteArray));
+    int[] intArray =byteArrayToIntArray(byteArray);
+    System.out.println("int "+Arrays.toString(intArray));
+    intArrayToByteArray(intArray);
 
   }
 
