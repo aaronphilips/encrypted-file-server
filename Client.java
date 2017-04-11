@@ -36,8 +36,8 @@ public class Client implements EncryptedCommunicator{
   }
 
   public void run(){
-    String sentence;
-    String modifiedSentence="";
+    // String sentence;
+    // String modifiedSentence="";
     BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
     try(Socket clientSocket = new Socket("localhost", 16000)){
@@ -48,12 +48,40 @@ public class Client implements EncryptedCommunicator{
       // System.out.println(publicKey.getClass());
       // System.out.println(publicKey);
 
-      sentence = inFromUser.readLine();
       outToServer.writeObject(publicKey);
+      outToServer.flush();
       receivePublicKey((PublicKey) inFromServer.readObject());
       generateCommonSecretKey();
-      System.out.println(new String(Arrays.toString(secretTEA_Key)));
+      System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
+      EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
+
+
+      // username
+      System.out.print("USERNAME: ");
+      String username = inFromUser.readLine();
+      EncryptedMessage encryptedUsername=new EncryptedMessage(username,secretTEA_Key);
+      sendEncrypted(encryptedUsername,outToServer);
+      // System.out.println("encryptedArray "+Arrays.toString(encryptedUsername.getEncryptedArray()));
+      // outToServer.writeObject(encryptedUsername);
+      // outToServer.flush();
+
+      System.out.print("PASSWORD: ");
+      String password = inFromUser.readLine();
+      EncryptedMessage encryptedPassword=new EncryptedMessage(password,secretTEA_Key);
+      sendEncrypted(encryptedPassword,outToServer);
+      // outToServer.writeObject(encryptedPassword);
+      // outToServer.flush();
+
+      // System.out.println(Arrays.toString(encryptedUserName.getEncryptedArray()));
+
+
+
+      //
+      // //pass
+      // sentence = inFromUser.readLine();
+      // outToServer.writeObject(sentence);
+      // outToServer.flush();
       // outToServer.writeInt(publicKey);
       // while(modifiedSentence==null||!Objects.equals(modifiedSentence,"DONE")){
       //   DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
@@ -73,9 +101,7 @@ public class Client implements EncryptedCommunicator{
       e.printStackTrace();
     }
   }
-
-  public void receiveEncrypted(){}
-  public void sendEncrypted(){}
+  
   public void generateCommonSecretKey(){
     try {
       final KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");

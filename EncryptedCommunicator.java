@@ -3,6 +3,10 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.PrivateKey;
 import java.security.NoSuchAlgorithmException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
+
 public interface EncryptedCommunicator{
   // PUT IN COMMON INTERFACE
   default public KeyPair generateKeys() throws NoSuchAlgorithmException{
@@ -37,7 +41,15 @@ public interface EncryptedCommunicator{
   //         e.printStackTrace();
   //     }
   // }
-  public void sendEncrypted();
-  public void receiveEncrypted();
+  default public void sendEncrypted(EncryptedMessage encryptedMessage,
+                                    ObjectOutputStream objectOutputStream)
+                                    throws IOException{
+    objectOutputStream.writeObject(encryptedMessage);
+    objectOutputStream.flush();
+  }
+  default public EncryptedMessage receiveEncrypted(ObjectInputStream objectInputStream)
+                                            throws IOException, ClassNotFoundException{
+    return (EncryptedMessage) objectInputStream.readObject();
+  }
   // public void setuphandshake();
 }

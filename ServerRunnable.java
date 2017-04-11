@@ -39,10 +39,6 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
   private byte[] secretTEA_Key;
 
 
-//
-
-  public void receiveEncrypted(){}
-  public void sendEncrypted(){}
   public void generateCommonSecretKey(){
     try {
       final KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");
@@ -72,15 +68,23 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       receivePublicKey((PublicKey) inFromClient.readObject());
       outToClient.writeObject(publicKey);
       generateCommonSecretKey();
-      System.out.println(new String(Arrays.toString(secretTEA_Key)));
-      // while(clientSentence==null||!Objects.equals(clientSentence,"done")){
-      //
-      //
-      //   DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
-      //   clientSentence = inFromClient.readLine();
-      //   capitalizedSentence = clientSentence.toUpperCase() + '\n';
-      //   outToClient.writeBytes(capitalizedSentence);
-      // }
+      System.out.println("This is the TEA key"+new String(Arrays.toString(secretTEA_Key)));
+      EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
+
+      EncryptedMessage encryptedUserName= receiveEncrypted(inFromClient);//dssd(EncryptedMessage) inFromClient.readObject();
+      System.out.println(encryptedMessageHandler.getString(encryptedUserName)+"|");
+
+      EncryptedMessage encryptedPassword= receiveEncrypted(inFromClient);//(EncryptedMessage) inFromClient.readObject();
+      System.out.println(encryptedMessageHandler.getString(encryptedPassword)+"|");
+
+
+
+      // AUTHENTICATE
+      // IF FAILED RETURN
+
+      
+
+
     }catch(IOException e){
       e.printStackTrace();
     }catch(ClassNotFoundException e){

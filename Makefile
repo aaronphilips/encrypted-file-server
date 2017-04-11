@@ -1,4 +1,4 @@
-all: clean ServerRunnable.class Server.class Client.class EncryptedCommunicator.class TEA.class TEA.h lib_TEA.so
+all: clean ServerRunnable.class Server.class Client.class EncryptedCommunicator.class EncryptedMessage.class EncryptedMessageHandler.class TEA.class TEA.h lib_TEA.so
 	@echo Load path: "${LD_LIBRARY_PATH}"
 		@echo 'You must ensure loadLibrary is set correctly (contains current directory)'
 		@echo 'You can do this by running this command once: "export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:."'
@@ -14,6 +14,12 @@ Client.class:
 EncryptedCommunicator.class:EncryptedCommunicator.java
 	javac EncryptedCommunicator.java
 
+EncryptedMessage.class:EncryptedMessage.java
+	javac EncryptedMessage.java
+
+EncryptedMessageHandler.class:EncryptedMessage.java
+	javac EncryptedMessageHandler.java
+
 TEA.class:TEA.java
 	javac TEA.java
 
@@ -21,7 +27,7 @@ TEA.h:TEA.class
 	javah -jni TEA
 
 lib_TEA.so:lib_TEA.c
-	gcc -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux -shared -fpic -o lib_TEA.so lib_TEA.c
+	gcc -I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux -shared -fpic -o lib_TEA.so lib_TEA.c encrypt.c decrypt.c
 
 
 clean:

@@ -8,7 +8,7 @@ public class Test{
   public static void main(String[] args) {
     String string ="heed";
     byte[] byteArray = string.getBytes();
-    System.out.println(Arrays.toString(byteArray));
+    System.out.println("bytes "+Arrays.toString(byteArray));
     System.out.println(new String(byteArray));
     System.out.println(byteArray.length);
     IntBuffer intBuf = ByteBuffer.wrap(byteArray)
@@ -16,21 +16,28 @@ public class Test{
                                  .asIntBuffer();
     int[] array = new int[intBuf.remaining()];
     intBuf.get(array);
-    System.out.println(Arrays.toString(array));
+    System.out.println("int "+Arrays.toString(array));
 
     // ENCRYPT
     // DECRYPT
     // array should be the same ... right?
-    
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(baos);
-    for(int i=0; i < array.length; ++i)
-    {
-      try{
-        dos.writeInt(array[i]);
-      }catch(Exception e){}
-    }
-    System.out.println(new String(baos.toByteArray()));
+
+    // ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    // DataOutputStream dos = new DataOutputStream(baos);
+    // for(int i=0; i < array.length; ++i)
+    // {
+    //   try{
+    //     dos.writeInt(array[i]);
+    //   }catch(Exception e){}
+    // }
+
+    ByteBuffer byteBuffer = ByteBuffer.allocate(array.length * 4);
+    IntBuffer intBuffer = byteBuffer.asIntBuffer();
+    intBuffer.put(array);
+
+    byte[] barray = byteBuffer.array();
+
+    System.out.println(new String(barray));
 
 
     //
