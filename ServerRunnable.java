@@ -15,29 +15,24 @@ import java.security.PrivateKey;
 import java.security.NoSuchAlgorithmException;
 
 public class ServerRunnable implements Runnable,EncryptedCommunicator{
-  private String clientSentence="";
-  private String capitalizedSentence;
   private Socket socket;
-  public ServerRunnable(Socket socket){
+  PublicKey receivedPublicKey;
+  PublicKey publicKey;
+  private PrivateKey privateKey;
+  private byte[] secretTEA_Key;
+  private byte[] salt;
+  public ServerRunnable(Socket socket,byte[] salt){
+    this.salt=salt;
     this.socket=socket;
     try{
       KeyPair keyPair=generateKeys();
       privateKey=keyPair.getPrivate();
       publicKey=keyPair.getPublic();
-      // System.out.println(privateKey.toString());
-      // System.out.println(publicKey.toString());
-
 
     }catch(NoSuchAlgorithmException e){
       e.printStackTrace();
     }
   }
-
-  PublicKey receivedPublicKey;
-  PublicKey publicKey;
-  private PrivateKey privateKey;
-  private byte[] secretTEA_Key;
-
 
   public void generateCommonSecretKey(){
     try {
@@ -82,7 +77,11 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       // AUTHENTICATE
       // IF FAILED RETURN
 
-      
+      // ELSE :
+      EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
+      sendEncrypted(encryptedLoginAck,outToClient);
+
+
 
 
     }catch(IOException e){

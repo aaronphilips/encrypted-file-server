@@ -1,4 +1,4 @@
-all: clean ServerRunnable.class Server.class Client.class EncryptedCommunicator.class EncryptedMessage.class EncryptedMessageHandler.class TEA.class TEA.h lib_TEA.so
+all: clean ServerRunnable.class Server.class ShadowFile.class Client.class EncryptedCommunicator.class EncryptedMessage.class EncryptedMessageHandler.class FileIO.class TEA.class TEA.h lib_TEA.so
 	@echo Load path: "${LD_LIBRARY_PATH}"
 		@echo 'You must ensure loadLibrary is set correctly (contains current directory)'
 		@echo 'You can do this by running this command once: "export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:."'
@@ -19,6 +19,12 @@ EncryptedMessage.class:EncryptedMessage.java
 
 EncryptedMessageHandler.class:EncryptedMessage.java
 	javac EncryptedMessageHandler.java
+
+FileIO.class:FileIO.java
+	javac FileIO.java
+
+ShadowFile.class:ShadowFile.java
+		javac ShadowFile.java
 
 TEA.class:TEA.java
 	javac TEA.java

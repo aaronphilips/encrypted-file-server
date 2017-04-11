@@ -26,82 +26,11 @@ public class Client implements EncryptedCommunicator{
       KeyPair keyPair=generateKeys();
       privateKey=keyPair.getPrivate();
       publicKey=keyPair.getPublic();
-      // System.out.println(privateKey.toString());
-      // System.out.println(publicKey.toString());
-
-
     }catch(NoSuchAlgorithmException e){
       e.printStackTrace();
     }
   }
 
-  public void run(){
-    // String sentence;
-    // String modifiedSentence="";
-    BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-
-    try(Socket clientSocket = new Socket("localhost", 16000)){
-      ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-      ObjectInputStream inFromServer= new ObjectInputStream(clientSocket.getInputStream());
-
-
-      // System.out.println(publicKey.getClass());
-      // System.out.println(publicKey);
-
-      outToServer.writeObject(publicKey);
-      outToServer.flush();
-      receivePublicKey((PublicKey) inFromServer.readObject());
-      generateCommonSecretKey();
-      System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
-      EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
-
-
-
-      // username
-      System.out.print("USERNAME: ");
-      String username = inFromUser.readLine();
-      EncryptedMessage encryptedUsername=new EncryptedMessage(username,secretTEA_Key);
-      sendEncrypted(encryptedUsername,outToServer);
-      // System.out.println("encryptedArray "+Arrays.toString(encryptedUsername.getEncryptedArray()));
-      // outToServer.writeObject(encryptedUsername);
-      // outToServer.flush();
-
-      System.out.print("PASSWORD: ");
-      String password = inFromUser.readLine();
-      EncryptedMessage encryptedPassword=new EncryptedMessage(password,secretTEA_Key);
-      sendEncrypted(encryptedPassword,outToServer);
-      // outToServer.writeObject(encryptedPassword);
-      // outToServer.flush();
-
-      // System.out.println(Arrays.toString(encryptedUserName.getEncryptedArray()));
-
-
-
-      //
-      // //pass
-      // sentence = inFromUser.readLine();
-      // outToServer.writeObject(sentence);
-      // outToServer.flush();
-      // outToServer.writeInt(publicKey);
-      // while(modifiedSentence==null||!Objects.equals(modifiedSentence,"DONE")){
-      //   DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-      //   BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      //   sentence = inFromUser.readLine();
-      //   outToServer.writeBytes(sentence + '\n');
-      //   modifiedSentence = inFromServer.readLine();
-      //   System.out.println(modifiedSentence);
-      // }
-
-      clientSocket.close();
-    }catch(UnknownHostException e){
-
-    }catch(IOException e){
-
-    }catch(ClassNotFoundException e){
-      e.printStackTrace();
-    }
-  }
-  
   public void generateCommonSecretKey(){
     try {
       final KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");
@@ -119,6 +48,57 @@ public class Client implements EncryptedCommunicator{
   public void receivePublicKey(PublicKey receivedPublicKey){
     this.receivedPublicKey=receivedPublicKey;
   }
+
+  public void run(){
+
+    BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+
+    try(Socket clientSocket = new Socket("localhost", 16000)){
+      ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+      ObjectInputStream inFromServer= new ObjectInputStream(clientSocket.getInputStream());
+
+      outToServer.writeObject(publicKey);
+      outToServer.flush();
+      receivePublicKey((PublicKey) inFromServer.readObject());
+      generateCommonSecretKey();
+      System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
+      EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
+
+
+      // username
+      System.out.print("USERNAME: ");
+      String username = inFromUser.readLine();
+      EncryptedMessage encryptedUsername=new EncryptedMessage(username,secretTEA_Key);
+      sendEncrypted(encryptedUsername,outToServer);
+
+
+      System.out.print("PASSWORD: ");
+      String password = inFromUser.readLine();
+      EncryptedMessage encryptedPassword=new EncryptedMessage(password,secretTEA_Key);
+      sendEncrypted(encryptedPassword,outToServer);
+
+      EncryptedMessage encryptedLoginAck=receiveEncrypted(inFromServer);
+      String ackstring=new String(encryptedMessageHandler.getString(encryptedLoginAck)).trim();
+      System.out.println(ackstring+" ack");
+      System.out.println("ack".equals(ackstring));
+      if(!"ack".equals(ackstring)){
+        System.out.println("login was not accepted");
+        return;
+      }
+      System.out.println("STARTING FILE REQUESTS");
+
+
+      clientSocket.close();
+    }catch(UnknownHostException e){
+
+    }catch(IOException e){
+
+    }catch(ClassNotFoundException e){
+      e.printStackTrace();
+    }
+  }
+
+
 
   public static void main(String[] args) {
 
