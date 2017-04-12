@@ -84,7 +84,7 @@ public class Client implements EncryptedCommunicator{
       }
       System.out.println("STARTING FILE REQUESTS.");
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-      String folderName=simpleDateFormat.format(new Date());
+      String folderName=username+"_"+simpleDateFormat.format(new Date());
       while(true){
         System.out.println("NEW REQUEST. Type \".finished\" without the quotes to finish retrieving");
         System.out.print("Filename: ");
@@ -115,8 +115,6 @@ public class Client implements EncryptedCommunicator{
       e.printStackTrace();
     }
   }
-
-
 
   public static void main(String[] args) {
 

@@ -49,7 +49,7 @@ public final class FileIO{
     Files.createFile(pathToFile);
     FileOutputStream fileOutputStream = new FileOutputStream("./"+folderName+"/"+fileName);
     fileOutputStream.write(byteArray);
-
+    fileOutputStream.close();
 
 
   }

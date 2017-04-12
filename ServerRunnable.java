@@ -76,8 +76,8 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       ArrayList<String> shadowfileList =FileIO.loadFileToList("shadowfile");
 
       if(!shadowfileList.contains(hash_salted)){
-        System.out.println("client with bad password");
-        EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
+        System.out.println("client with bad login");
+        EncryptedMessage encryptedLoginAck =new EncryptedMessage("invalidLogin",secretTEA_Key);
         sendEncrypted(encryptedLoginAck,outToClient);
         return;
       }

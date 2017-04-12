@@ -4,7 +4,12 @@
 import java.io.Serializable;
 // import java.util.Arrays;
 public class EncryptedMessage implements Serializable {
-  private int[] encryptedArray;
+  /**
+	 * Eclipse did this 
+	 */
+	private static final long serialVersionUID = 5727100107509104160L;
+
+	private int[] encryptedArray;
   public EncryptedMessage(int[] value,byte[] key){
 
     int [] keyArray=DataConverter.byteArrayToIntArray(key);
