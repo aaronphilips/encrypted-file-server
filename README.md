@@ -17,7 +17,7 @@ For hashing and salting the shadow password file: I did not reinvent the wheel o
 
 For the design documents(UMLs) I used the ObjectAid(class diagram), an external tool for eclipse.
 creatly.com for sequence diagram (please note i did not involve static classes in this diagram as they can really have life lines)
-I am aware that the sequence diagram is not great, but it is hard to model this sort of program. (concurrency and sockets)
+
 
 
 ## How to run
@@ -73,7 +73,7 @@ test files
 
 ## Final thoughts
   I did not make the user interface very nice, as this was not a requirement. For example, to quit the server, one must send sigint with Ctrl+C
-  Also due to time constraints, did not refactor as much as i would like.
+  Also due to time constraints, did not refactor as much as i would like. I am aware that the sequence diagram is not great, but it is hard to model this sort of program. (concurrency and sockets)
 
 ## Sources
 
