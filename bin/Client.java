@@ -15,7 +15,8 @@ import java.security.PrivateKey;
 import javax.crypto.KeyAgreement;
 import java.util.Arrays;
 import java.io.EOFException;
-
+import java.net.SocketException;
+import java.io.Console;
 public class Client implements EncryptedCommunicator{
 
   PublicKey receivedPublicKey;
@@ -62,32 +63,31 @@ public class Client implements EncryptedCommunicator{
       outToServer.flush();
       receivePublicKey((PublicKey) inFromServer.readObject());
       generateCommonSecretKey();
-      // System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
+
       EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
 
-      // username
       System.out.print("USERNAME: ");
       String username = inFromUser.readLine();
       EncryptedMessage encryptedUsername=new EncryptedMessage(username,secretTEA_Key);
       sendEncrypted(encryptedUsername,outToServer);
 
-
+      Console console = System.console();
       System.out.print("PASSWORD: ");
-      String password = inFromUser.readLine();
+      String password =new String(console.readPassword());
       EncryptedMessage encryptedPassword=new EncryptedMessage(password,secretTEA_Key);
       sendEncrypted(encryptedPassword,outToServer);
 
       EncryptedMessage encryptedLoginAck=receiveEncrypted(inFromServer);
       if(!Objects.equals("ack",encryptedMessageHandler.getString(encryptedLoginAck))){
-        System.out.println("login was not accepted");
+        System.out.println("INVALID LOGIN");
         return;
       }
       System.out.println("STARTING FILE REQUESTS.");
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
       String folderName=username+"_"+simpleDateFormat.format(new Date());
       while(true){
-        System.out.println("NEW REQUEST. Type \".finished\" without the quotes to finish retrieving");
+        System.out.println(System.getProperty("line.separator")+"NEW REQUEST. Type a filename with extension or type \".finished\" without the quotes to finish retrieving");
         System.out.print("Filename: ");
         String fileName = inFromUser.readLine();
 
@@ -103,21 +103,24 @@ public class Client implements EncryptedCommunicator{
           byte[] fileByteArray=encryptedMessageHandler.getByteArray(encryptedFile);
           FileIO.saveByteArrayToFile(fileByteArray,fileName,folderName);
         }else if(Objects.equals("fileNotFound",encryptedMessageHandler.getString(encryptedAck))){
-          System.out.println("fileNotFound");
+          System.out.println("FILE NOT FOUND");
         }
       }
       clientSocket.close();
-      System.out.println("Done. See directory "+folderName);
+      System.out.println("FINISHED. SEE DIRECTORY "+folderName);
+    }
+    catch(SocketException e){
+      System.out.println("CONNECTION TO SERVER CLOSED");
     }catch(UnknownHostException e){
       e.printStackTrace();
     }catch(EOFException e){
-      System.out.println("Connection to server closed");
+      System.out.println("CONNECTION TO SERVER CLOSED");
     }catch(IOException e){
       e.printStackTrace();
     }catch(ClassNotFoundException e){
       e.printStackTrace();
     }
-    System.out.println("Client completed");
+    System.out.println("CLIENT COMPLETED");
   }
 
   public static void main(String[] args) {

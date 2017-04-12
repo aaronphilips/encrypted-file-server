@@ -36,7 +36,7 @@ public class Server{
       usernamePasswordList.remove(usernamePasswordList.size()-1);
     }catch (IOException e) {
       e.printStackTrace();
-      System.out.println("FAILED setting up users and passwords");
+      System.out.println("FAILED SETTING UP USERS AND PASSWORDS");
     }
 
     salt=ShadowFile.generateSalt();
@@ -45,7 +45,7 @@ public class Server{
 
   public static void main(String[] args) {
     Server server = new Server();
-    System.out.println("SERVER RUNNINNG");
+    System.out.println("SERVER RUNNING");
     try(ServerSocket serverSocket = new ServerSocket(16000)){
       while(true) {
         ServerRunnable serverRunnable= new ServerRunnable(serverSocket.accept(),server.salt);

@@ -15,12 +15,11 @@ public final class ShadowFile{
     r.nextBytes(salt);
     return salt;
   }
-  
+
   public static void generateShadowFile(ArrayList<String> usernamePasswordList,byte[] salt){
 
     ArrayList<String> hashedUsernamePasswordList=new ArrayList<String>();
     for (String usernamePassword : usernamePasswordList) {
-      System.out.println(usernamePassword);
       hashedUsernamePasswordList.add(hash_md5(usernamePassword,salt));
     }
     FileIO.deleteFile("shadowfile");

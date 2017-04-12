@@ -55,13 +55,13 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
 
   public void run(){
 
-    System.out.println("ServerRunnable Connected");
+    System.out.println("SERVER RUNNABLE STARTED");
     try(ObjectInputStream inFromClient = new ObjectInputStream(socket.getInputStream())){
       ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
       receivePublicKey((PublicKey) inFromClient.readObject());
       outToClient.writeObject(publicKey);
       generateCommonSecretKey();
-      // System.out.println("This is the TEA key"+new String(Arrays.toString(secretTEA_Key)));
+
       EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
       EncryptedMessage encryptedUserName= receiveEncrypted(inFromClient);
@@ -75,7 +75,7 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       ArrayList<String> shadowfileList =FileIO.loadFileToList("shadowfile");
 
       if(!shadowfileList.contains(hash_salted)){
-        System.out.println("client with bad login");
+        System.out.println("CLIENT WITH INVALID CREDENTIALS");
         EncryptedMessage encryptedLoginAck =new EncryptedMessage("invalidLogin",secretTEA_Key);
         sendEncrypted(encryptedLoginAck,outToClient);
         return;
@@ -85,11 +85,10 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
       sendEncrypted(encryptedLoginAck,outToClient);
       while(true){
-        System.out.println("getting new REQUEST");
+        System.out.println("NEW CLIENT REQUEST");
 
         EncryptedMessage encryptedFileName= receiveEncrypted(inFromClient);//(EncryptedMessage) inFromClient.readObject();
         String fileName=encryptedMessageHandler.getString(encryptedFileName);
-        System.out.println(fileName);
 
         if(FileIO.checkFileExists(fileName,"DATA")){
           EncryptedMessage encryptedAck =new EncryptedMessage("ack",secretTEA_Key);
@@ -98,7 +97,7 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
           EncryptedMessage encryptedFile =new EncryptedMessage(fileByteArray,secretTEA_Key);
           sendEncrypted(encryptedFile,outToClient);
         }else{
-          System.out.println("invalid file request from: "+username);
+          System.out.println("INVALID FILE REQUEST FROM: "+username);
           EncryptedMessage encryptedAck =new EncryptedMessage("fileNotFound",secretTEA_Key);
           sendEncrypted(encryptedAck,outToClient);
         }
@@ -106,10 +105,10 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
     }catch(ClassNotFoundException e){
       e.printStackTrace();
     }catch(EOFException e){
-      System.out.println("Connection to client closed");
+      System.out.println("CONNECTION TO CLIENT CLOSED");
     }catch(IOException e){
       e.printStackTrace();
     }
-    System.out.println("Server runnable completed");
+    System.out.println("SERVER RUNNABLE COMPLETED");
   }
 }
