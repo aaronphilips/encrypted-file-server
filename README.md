@@ -15,7 +15,10 @@ This protocol was not made to send int arrays directly as this could lose data. 
 
 For hashing and salting the shadow password file: I did not reinvent the wheel or try to get the TEA to work on inputed strings and a generated salt, which would involve more data conversions. Instead I looked around online (linked the resource below) and found another method. This involved creating random byte array as a salt, and concating this with the bytes of the combined string of a username with a password delimited by a comma. I take the concatenated salt,username and password combination and then use the existing library class MessageDigest with MD5 hashing protocol to create a hex string hash out it. For info on the MD5 algorithim, see wikipedia page in sources.
 
-For the design documents(UMLs) I used the ObjectAid, an external tool for eclipse.
+For the design documents(UMLs) I used the ObjectAid(class diagram), an external tool for eclipse.
+creatly.com for sequence diagram (please note i did not involve static classes in this diagram as they can really have life lines)
+I am aware that the sequence diagram is not great, but it is hard to model this sort of program. (concurrency and sockets)
+
 
 ## How to run
 
