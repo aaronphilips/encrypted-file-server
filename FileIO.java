@@ -55,6 +55,7 @@ public final class FileIO{
   }
 
   // http://stackoverflow.com/questions/5343689/java-reading-a-file-into-an-arraylist
+  // in the following functions, i make sure that folderName is always hardcoded, and not user inputable. this protects the files outside the that folder
   public static byte[] loadFileToByteArray(String fileName, String folderName) throws IOException{
       Path loadPath = Paths.get("./"+folderName+"/"+ fileName).toAbsolutePath();
       if(!loadPath.startsWith(Paths.get("./"+folderName).toAbsolutePath())) throw new IOException();
@@ -65,18 +66,20 @@ public final class FileIO{
     return (new File(filepath).delete());
   }
 
-  // public static void createDATA(){
-  //   try{
-  //     Files.createDirectories(Paths.get("./DATA"));
-  //   }catch (IOException e) {
-  //     e.printStackTrace();
-  //   }
-  // }
+  public static Boolean checkFileExists(String fileName,String folderName) throws IOException{
+    Path loadPath = Paths.get("./"+folderName+"/"+ fileName).toAbsolutePath();
+    if(!loadPath.startsWith(Paths.get("./"+folderName).toAbsolutePath())) throw new IOException();
+    File file = new File(loadPath.toString());
+    return file.exists() && !file.isDirectory();
+  }
+
+
   public static void main(String[] args) {
     try {
-      byte[] byteArray= loadFileToByteArray("input.txt","DATA");
-      saveByteArrayToFile(byteArray,"output.txt","user");
-    // do something
+      // byte[] byteArray= loadFileToByteArray("input.txt","DATA");
+      // saveByteArrayToFile(byteArray,"output.txt","user");
+      // System.out.println(checkFileExists("output.txt","user"));
+      // System.out.println(checkFileExists("Client.jaa","."));
 
     }catch (Exception e) {
       System.out.println("wentbad");

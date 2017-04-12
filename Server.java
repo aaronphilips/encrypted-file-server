@@ -33,13 +33,14 @@ public class Server{
         input=inFromUser.readLine();
         usernamePasswordList.add(input);
       }
+      usernamePasswordList.remove(usernamePasswordList.size()-1);
     }catch (IOException e) {
       e.printStackTrace();
       System.out.println("FAILED setting up users and passwords");
     }
 
     salt=ShadowFile.generateSalt();
-    ShadowFile.generateShadowTable(usernamePasswordList,salt);
+    ShadowFile.generateShadowFile(usernamePasswordList,salt);
   }
 
   public static void main(String[] args) {

@@ -15,7 +15,7 @@ public final class ShadowFile{
     r.nextBytes(salt);
     return salt;
   }
-  public static void generateShadowTable(ArrayList<String> usernamePasswordList,byte[] salt){
+  public static void generateShadowFile(ArrayList<String> usernamePasswordList,byte[] salt){
 
     ArrayList<String> hashedUsernamePasswordList=new ArrayList<String>();
     for (String usernamePassword : usernamePasswordList) {
@@ -27,7 +27,7 @@ public final class ShadowFile{
 
 
   }
-  private static String hash_md5(String input,byte[] salt){
+  public static String hash_md5(String input,byte[] salt){
     String output=null;
     if(input==null)return output;
     try {
@@ -44,4 +44,5 @@ public final class ShadowFile{
     return output;
 
   }
+
 }

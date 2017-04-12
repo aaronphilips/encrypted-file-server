@@ -1,18 +1,17 @@
 import java.net.Socket;
 import java.util.Arrays;
-// import java.io.BufferedReader;
-// import java.io.DataOutputStream;
-// import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
-import java.util.Objects;
+import java.io.EOFException;
+// import java.util.Objects;
 import javax.crypto.KeyAgreement;
-// import java.security.KeyPairGenerator;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.PrivateKey;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+
 
 public class ServerRunnable implements Runnable,EncryptedCommunicator{
   private Socket socket;
@@ -56,10 +55,8 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
 
 
   public void run(){
-    // Socket connectionSocket =socket.accept();
-    System.out.println("connected");
 
-
+    System.out.println("ServerRunnable Connected");
     try(ObjectInputStream inFromClient = new ObjectInputStream(socket.getInputStream())){
       ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
       receivePublicKey((PublicKey) inFromClient.readObject());
@@ -68,41 +65,51 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       System.out.println("This is the TEA key"+new String(Arrays.toString(secretTEA_Key)));
       EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
-      EncryptedMessage encryptedUserName= receiveEncrypted(inFromClient);//dssd(EncryptedMessage) inFromClient.readObject();
-      System.out.println(encryptedMessageHandler.getString(encryptedUserName)+"|");
+      EncryptedMessage encryptedUserName= receiveEncrypted(inFromClient);
+      String username = encryptedMessageHandler.getString(encryptedUserName);
 
-      EncryptedMessage encryptedPassword= receiveEncrypted(inFromClient);//(EncryptedMessage) inFromClient.readObject();
-      System.out.println(encryptedMessageHandler.getString(encryptedPassword)+"|");
+      EncryptedMessage encryptedPassword= receiveEncrypted(inFromClient);
+      String password = encryptedMessageHandler.getString(encryptedPassword);
+
+      String hash_salted =ShadowFile.hash_md5(username+","+password,salt);
+
+      ArrayList<String> shadowfileList =FileIO.loadFileToList("shadowfile");
+
+      if(!shadowfileList.contains(hash_salted)){
+        System.out.println("client with bad password");
+        EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
+        sendEncrypted(encryptedLoginAck,outToClient);
+        return;
+      }
 
 
-
-      // AUTHENTICATE
-      // IF FAILED RETURN
-
-      // ELSE :
       EncryptedMessage encryptedLoginAck =new EncryptedMessage("ack",secretTEA_Key);
       sendEncrypted(encryptedLoginAck,outToClient);
       while(true){
         System.out.println("getting new REQUEST");
 
         EncryptedMessage encryptedFileName= receiveEncrypted(inFromClient);//(EncryptedMessage) inFromClient.readObject();
-        System.out.println(encryptedMessageHandler.getString(encryptedFileName)+"|");
-        // if file exists
-        // try{
-          // byte[] fileByteArray =FileIO.loadFileToByteArray()
-          // EncryptedMessage encryptedFile=new EncryptedMessage(fileByteArray,secretTEA_Key);
-        // }catch (IOException e) {
-        //
-        // }
+        String fileName=encryptedMessageHandler.getString(encryptedFileName);
+        System.out.println(fileName);
 
+        if(FileIO.checkFileExists(fileName,"DATA")){
+          System.out.println("thats a file");
+          EncryptedMessage encryptedAck =new EncryptedMessage("ack",secretTEA_Key);
+          sendEncrypted(encryptedAck,outToClient);
+          byte[] fileByteArray = FileIO.loadFileToByteArray(fileName,"DATA");
+          EncryptedMessage encryptedFile =new EncryptedMessage(fileByteArray,secretTEA_Key);
+          sendEncrypted(encryptedFile,outToClient);
+        }else{
+          System.out.println("thats not a file");
+          EncryptedMessage encryptedAck =new EncryptedMessage("fileNotFound",secretTEA_Key);
+          sendEncrypted(encryptedAck,outToClient);
+        }
       }
-
-
-
-
-    }catch(IOException e){
-      e.printStackTrace();
     }catch(ClassNotFoundException e){
+      e.printStackTrace();
+    }catch(EOFException e){
+      System.out.println("Connection to client closed");
+    }catch(IOException e){
       e.printStackTrace();
     }
     System.out.println("Server runnable completed");
