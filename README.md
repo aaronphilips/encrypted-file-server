@@ -33,28 +33,42 @@ To run, first setup the server by typing:
 `java Server`
 
 follow the instructions to load up valid username and password hashes with a new salt. This is just simulating the server already existing and running with users already stored (this is in assignment spec: "...presumably already stored...").
+
 `exampleusername,examplepassword`
+
 `.done`
 
 Optionally, you can add files to retrieve in the servers DATA folder at this stage, although a few already exist
 
 on separate terminal (project said "for simplicity, the server should run on the same machine") run:
+
 `java Client`
 
+
 follow the instructions to login
+
 `exampleusername`
+
 `examplepassword`
 
+
 enter valid file names that exist in the servers DATA folder.
+
 `RickRollMarioPaint.mp3`
+
 `.finished`
+
 
 files should be saved in a new folder with the username and a time stamp
 
 test files
+
 `empty.txt`
+
 `input.txt`
+
 `RickRollMarioPaint.mp3`
+
 `testphoto.jpg`
 
 ## Final thoughts
