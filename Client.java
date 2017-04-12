@@ -14,6 +14,7 @@ import java.security.PublicKey;
 import java.security.PrivateKey;
 import javax.crypto.KeyAgreement;
 import java.util.Arrays;
+import java.io.EOFException;
 
 public class Client implements EncryptedCommunicator{
 
@@ -61,7 +62,7 @@ public class Client implements EncryptedCommunicator{
       outToServer.flush();
       receivePublicKey((PublicKey) inFromServer.readObject());
       generateCommonSecretKey();
-      System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
+      // System.out.println("This is the TEA key clientside "+new String(Arrays.toString(secretTEA_Key)));
       EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
 
@@ -105,15 +106,18 @@ public class Client implements EncryptedCommunicator{
           System.out.println("fileNotFound");
         }
       }
-      System.out.println("client closing");
       clientSocket.close();
+      System.out.println("Done. See directory "+folderName);
     }catch(UnknownHostException e){
-
+      e.printStackTrace();
+    }catch(EOFException e){
+      System.out.println("Connection to server closed");
     }catch(IOException e){
-
+      e.printStackTrace();
     }catch(ClassNotFoundException e){
       e.printStackTrace();
     }
+    System.out.println("Client completed");
   }
 
   public static void main(String[] args) {

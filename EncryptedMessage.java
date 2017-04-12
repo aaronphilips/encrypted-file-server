@@ -1,11 +1,8 @@
-// import java.nio.IntBuffer;
-// import java.nio.ByteOrder;
-// import java.nio.ByteBuffer;
 import java.io.Serializable;
-// import java.util.Arrays;
+
 public class EncryptedMessage implements Serializable {
   /**
-	 * Eclipse did this 
+	 * Eclipse told me to do this when I made my uml
 	 */
 	private static final long serialVersionUID = 5727100107509104160L;
 
@@ -20,7 +17,6 @@ public class EncryptedMessage implements Serializable {
 
   public EncryptedMessage(byte[] byteArray,byte[] key){
     this(DataConverter.byteArrayToIntArray(byteArray),key);
-    // System.out.println("int arr "+Arrays.toString(DataConverter.byteArrayToIntArray(byteArray)));
   }
 
   public EncryptedMessage(String message,byte[] key){
@@ -30,8 +26,6 @@ public class EncryptedMessage implements Serializable {
   private EncryptedMessage(){}
 
   public int[] getEncryptedArray(){
-    // return encryptedArray;
-    // changed it because its weird to change the data the encrypted message has
     int [] returnArray=new int[encryptedArray.length];
     System.arraycopy(encryptedArray,0,returnArray,0,encryptedArray.length);
     return returnArray;

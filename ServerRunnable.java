@@ -4,7 +4,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
-// import java.util.Objects;
 import javax.crypto.KeyAgreement;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -62,7 +61,7 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       receivePublicKey((PublicKey) inFromClient.readObject());
       outToClient.writeObject(publicKey);
       generateCommonSecretKey();
-      System.out.println("This is the TEA key"+new String(Arrays.toString(secretTEA_Key)));
+      // System.out.println("This is the TEA key"+new String(Arrays.toString(secretTEA_Key)));
       EncryptedMessageHandler encryptedMessageHandler=new EncryptedMessageHandler(secretTEA_Key);
 
       EncryptedMessage encryptedUserName= receiveEncrypted(inFromClient);
@@ -93,14 +92,13 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
         System.out.println(fileName);
 
         if(FileIO.checkFileExists(fileName,"DATA")){
-          System.out.println("thats a file");
           EncryptedMessage encryptedAck =new EncryptedMessage("ack",secretTEA_Key);
           sendEncrypted(encryptedAck,outToClient);
           byte[] fileByteArray = FileIO.loadFileToByteArray(fileName,"DATA");
           EncryptedMessage encryptedFile =new EncryptedMessage(fileByteArray,secretTEA_Key);
           sendEncrypted(encryptedFile,outToClient);
         }else{
-          System.out.println("thats not a file");
+          System.out.println("invalid file request from: "+username);
           EncryptedMessage encryptedAck =new EncryptedMessage("fileNotFound",secretTEA_Key);
           sendEncrypted(encryptedAck,outToClient);
         }

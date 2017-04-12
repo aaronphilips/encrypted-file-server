@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.util.ArrayList;
-// http://stackoverflow.com/questions/18268502/how-to-generate-salt-value-in-java
+
 public class Server{
   protected byte[] salt;
 

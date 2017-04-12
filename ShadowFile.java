@@ -5,7 +5,7 @@ import java.util.Random;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
 
-// http://viralpatel.net/blogs/java-md5-hashing-salting-password/
+
 public final class ShadowFile{
   private ShadowFile(){}
 
@@ -15,6 +15,7 @@ public final class ShadowFile{
     r.nextBytes(salt);
     return salt;
   }
+  
   public static void generateShadowFile(ArrayList<String> usernamePasswordList,byte[] salt){
 
     ArrayList<String> hashedUsernamePasswordList=new ArrayList<String>();
@@ -24,9 +25,8 @@ public final class ShadowFile{
     }
     FileIO.deleteFile("shadowfile");
     FileIO.saveListToFile(hashedUsernamePasswordList,"shadowfile");
-
-
   }
+
   public static String hash_md5(String input,byte[] salt){
     String output=null;
     if(input==null)return output;

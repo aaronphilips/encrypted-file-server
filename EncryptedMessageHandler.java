@@ -1,9 +1,7 @@
-// import java.nio.IntBuffer;
-// import java.nio.ByteBuffer;
 
 public class EncryptedMessageHandler{
 
-  // since we are transporting this, its safe to give it the key
+  // since we are not transporting this, its safe to give it the key
   private int[] key;
   public EncryptedMessageHandler(byte[] key){
     this.key=DataConverter.byteArrayToIntArray(key);

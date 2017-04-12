@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-// import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -10,12 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.io.FileOutputStream;
-// http://www.programcreek.com/java-api-examples/index.php?class=org.apache.commons.io.FileUtils&method=writeByteArrayToFile
-// http://stackoverflow.com/questions/2833853/create-whole-path-automatically-when-writing-to-a-new-file
+
 public final class FileIO{
 
   private FileIO(){}
-
+  // this pair of save and load functions i took from MY las project, slightly edited
   public static void saveListToFile (ArrayList<?> listToBePrinted,String fileName){
     Iterator<?> listToBePrintedIterator=listToBePrinted.iterator();
 
@@ -40,6 +38,7 @@ public final class FileIO{
     return stringList;
   }
 
+  // in the following functions, i make sure that folderName is always hardcoded, and not user inputable. this protects the files outside the that folder
   public static void saveByteArrayToFile (byte[] byteArray,String fileName,String folderName) throws IOException{
     Path pathToFile = Paths.get("./"+folderName+"/"+fileName).toAbsolutePath();
     if(!pathToFile.startsWith(Paths.get(".").toAbsolutePath())) throw new IOException();
@@ -50,12 +49,8 @@ public final class FileIO{
     FileOutputStream fileOutputStream = new FileOutputStream("./"+folderName+"/"+fileName);
     fileOutputStream.write(byteArray);
     fileOutputStream.close();
-
-
   }
 
-  // http://stackoverflow.com/questions/5343689/java-reading-a-file-into-an-arraylist
-  // in the following functions, i make sure that folderName is always hardcoded, and not user inputable. this protects the files outside the that folder
   public static byte[] loadFileToByteArray(String fileName, String folderName) throws IOException{
       Path loadPath = Paths.get("./"+folderName+"/"+ fileName).toAbsolutePath();
       if(!loadPath.startsWith(Paths.get("./"+folderName).toAbsolutePath())) throw new IOException();
@@ -71,20 +66,5 @@ public final class FileIO{
     if(!loadPath.startsWith(Paths.get("./"+folderName).toAbsolutePath())) throw new IOException();
     File file = new File(loadPath.toString());
     return file.exists() && !file.isDirectory();
-  }
-
-
-  public static void main(String[] args) {
-    try {
-      // byte[] byteArray= loadFileToByteArray("input.txt","DATA");
-      // saveByteArrayToFile(byteArray,"output.txt","user");
-      // System.out.println(checkFileExists("output.txt","user"));
-      // System.out.println(checkFileExists("Client.jaa","."));
-
-    }catch (Exception e) {
-      System.out.println("wentbad");
-      e.printStackTrace();
-    }
-
   }
 }
