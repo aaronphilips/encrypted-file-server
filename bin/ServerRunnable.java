@@ -18,10 +18,8 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
   PublicKey publicKey;
   private PrivateKey privateKey;
   private byte[] secretTEA_Key;
-  private byte[] salt;
 
-  public ServerRunnable(Socket socket,byte[] salt){
-    this.salt=salt;
+  public ServerRunnable(Socket socket){
     this.socket=socket;
     try{
       KeyPair keyPair=generateKeys();
@@ -70,11 +68,9 @@ public class ServerRunnable implements Runnable,EncryptedCommunicator{
       EncryptedMessage encryptedPassword= receiveEncrypted(inFromClient);
       String password = encryptedMessageHandler.getString(encryptedPassword);
 
-      String hash_salted =ShadowFile.hash_md5(username+","+password,salt);
 
-      ArrayList<String> shadowfileList =FileIO.loadFileToList("shadowfile");
 
-      if(!shadowfileList.contains(hash_salted)){
+      if(!ShadowFile.login(username,password)){
         System.out.println("CLIENT WITH INVALID CREDENTIALS");
         EncryptedMessage encryptedLoginAck =new EncryptedMessage("invalidLogin",secretTEA_Key);
         sendEncrypted(encryptedLoginAck,outToClient);

@@ -18,7 +18,7 @@ Note the for loops are actually 0 indexed in the code so indeces were from 0 to 
 
 This protocol was not made to send int arrays directly as this could lose data. Current only bytes or strings are supported, but this could be extended. These messages are wrapped in EncryptedMessage objects, which only store an encrypted int array corresponding to data to transmitted.
 
-For hashing and salting the shadow password file: I did not reinvent the wheel or try to get the TEA to work on inputed strings and a generated salt, which would involve more data conversions. Instead I looked around online (linked the resource below) and found another method. This involved creating random byte array as a salt, and concating this with the bytes of the combined string of a username with a password delimited by a comma. I take the concatenated salt,username and password combination and then use the existing library class MessageDigest with MD5 hashing protocol to create a hex string hash out it. For info on the MD5 algorithim, see wikipedia page in sources.
+For hashing and salting the shadow password file: I did not reinvent the wheel or try to get the TEA to work on inputed strings and a generated salt, which would involve more data conversions. Instead I looked around online (linked the resource below) and found another method. This involved creating random byte array and converting it string as a salt, and then use the existing library class MessageDigest with MD5 hashing protocol to create a hex string hash out it. For info on the MD5 algorithim, see wikipedia page in sources.
 
 For the design documents(UMLs) I used the ObjectAid(class diagram), an external tool for eclipse.
 creatly.com for sequence diagram (please note I did not involve static classes in this diagram as they cannot really have life lines)
@@ -88,7 +88,7 @@ https://en.wikipedia.org/wiki/Feistel_cipher
 https://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm
 
 
-For idea of using MessageDigest class and md5 hashing, implemented slighlty differently (no point in making salt a string, or hardcoding it anywhere)
+For idea of using MessageDigest class and md5 hashing, implemented slighlty differently.
 http://viralpatel.net/blogs/java-md5-hashing-salting-password/
 
 Refresher on diffie-hellman
