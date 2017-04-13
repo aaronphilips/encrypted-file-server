@@ -67,8 +67,7 @@ public final class ShadowFile{
           shadowFileList.add(usernameList.get(i)+" "+salt+" "+hash_md5(passwordList.get(i),salt));
           FileIO.saveListToFile(shadowFileList,"shadowfile");
         }
-        // e.printStackTrace();
-        // System.out.println("FAILED SETTING UP USERS AND PASSWORDS");
+
       }
 
 
@@ -104,18 +103,4 @@ public final class ShadowFile{
     }
     return false;
   }
-  public static void main(String[] args) {
-    try {
-      generateShadowFile();
-
-    }catch (Exception e) {
-
-    }
-    System.out.println(login("aaron","pass"));
-    System.out.println(login("aaro","pass"));
-    System.out.println(login("aaron","pas1"));
-
-
-  }
-
 }
